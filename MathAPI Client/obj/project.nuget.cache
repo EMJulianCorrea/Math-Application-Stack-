@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "dgSpecHash": "0TNtdpqdAio=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\lab_services_student\\Documents\\VSCode Projects\\MathAPI Client\\MathAPIClient.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\lab_services_student\\.nuget\\packages\\firebase.auth\\1.0.0\\firebase.auth.1.0.0.nupkg.sha512",
+    "C:\\Users\\lab_services_student\\.nuget\\packages\\microsoft.netcore.jit\\1.0.2\\microsoft.netcore.jit.1.0.2.nupkg.sha512",
+    "C:\\Users\\lab_services_student\\.nuget\\packages\\microsoft.netcore.platforms\\1.0.1\\microsoft.netcore.platforms.1.0.1.nupkg.sha512",
+    "C:\\Users\\lab_services_student\\.nuget\\packages\\microsoft.netcore.portable.compatibility\\1.0.1\\microsoft.netcore.portable.compatibility.1.0.1.nupkg.sha512",
+    "C:\\Users\\lab_services_student\\.nuget\\packages\\microsoft.netcore.runtime.coreclr\\1.0.2\\microsoft.netcore.runtime.coreclr.1.0.2.nupkg.sha512",
+    "C:\\Users\\lab_services_student\\.nuget\\packages\\microsoft.netcore.windows.apisets\\1.0.1\\microsoft.netcore.windows.apisets.1.0.1.nupkg.sha512",
+    "C:\\Users\\lab_services_student\\.nuget\\packages\\netstandard.library\\1.6.0\\netstandard.library.1.6.0.nupkg.sha512",
+    "C:\\Users\\lab_services_student\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "message": "Package 'Microsoft.NETCore.Jit' 1.0.2 has a known high severity vulnerability, https://github.com/advisories/GHSA-xcvr-qv8h-m7xw",
+      "projectPath": "C:\\Users\\lab_services_student\\Documents\\VSCode Projects\\MathAPI Client\\MathAPIClient.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\lab_services_student\\Documents\\VSCode Projects\\MathAPI Client\\MathAPIClient.csproj",
+      "libraryId": "Microsoft.NETCore.Jit",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    }
+  ]
+}
