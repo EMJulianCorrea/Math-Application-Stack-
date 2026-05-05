@@ -1,0 +1,38 @@
+services:
+  math-db:
+    image: ghcr.io/${GITHUB_OWNER_LC}/mathstack-db:${IMAGE_TAG}
+    container_name: math-db
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "${SA_PASSWORD}"
+    ports:
+      - "1433:1433"
+
+  math-api:
+    image: ghcr.io/${GITHUB_OWNER_LC}/mathstack-api:${IMAGE_TAG}
+    container_name: math-api
+    depends_on:
+      - math-db
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      FirebaseMathApp: "${FirebaseMathApp}"
+      MathAppJwtKey: "${MathAppJwtKey}"
+      Math_DB: "Server=math-db,1433;Database=MathDB;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;"
+    ports:
+      - "8081:8080"
+
+  math-client:
+    image: ghcr.io/${GITHUB_OWNER_LC}/mathstack-client:${IMAGE_TAG}
+    container_name: math-client
+    depends_on:
+      - math-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ApiSettings__BaseUrl: "http://math-api:8080"
+    ports:
+      - "8082:8080"
+    volumes:
+      - client-dataprotection-keys:/keys
+
+volumes:
+  client-dataprotection-keys:

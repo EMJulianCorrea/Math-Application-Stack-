@@ -1,0 +1,74 @@
+services:
+  math-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: math-db
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "${SA_PASSWORD}"
+    ports:
+      - "1433:1433"
+    volumes:
+      - mathdb_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c '</dev/tcp/localhost/1433'"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  db-init:
+    image: mcr.microsoft.com/mssql-tools
+    container_name: db-init
+    depends_on:
+      math-db:
+        condition: service_healthy
+    volumes:
+      - ./db/init.sql:/init.sql
+    entrypoint: >
+      /bin/bash -c "
+      /opt/mssql-tools/bin/sqlcmd -S math-db -U sa -P ${SA_PASSWORD} -Q 'SELECT 1' ;
+      until [ $$? -eq 0 ]; do
+        echo 'Waiting for SQL Server...';
+        sleep 2;
+        /opt/mssql-tools/bin/sqlcmd -S math-db -U sa -P ${SA_PASSWORD} -Q 'SELECT 1' ;
+      done;
+      echo 'Running init.sql...';
+      /opt/mssql-tools/bin/sqlcmd -S math-db -U sa -P ${SA_PASSWORD} -i /init.sql;
+      echo 'Database initialized';
+      "
+    restart: "no"
+
+  math-api:
+    build:
+      context: ./MathAPI
+      dockerfile: Dockerfile
+    container_name: math-api
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      FirebaseMathApp: "${FirebaseMathApp}"
+      MathAppJwtKey: "${MathAppJwtKey}"
+      Math_DB: "Server=math-db,1433;Database=MathDB;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;"
+    ports:
+      - "8081:8080"
+
+  math-client:
+    build:
+      context: ./MathAPIClient
+      dockerfile: Dockerfile
+    container_name: math-client
+    depends_on:
+      - math-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ApiSettings__BaseUrl: "http://math-api:8080"
+    ports:
+      - "8082:8080"
+    volumes:
+      - client-dataprotection-keys:/keys
+
+volumes:
+  mathdb_data:
+  client-dataprotection-keys:
