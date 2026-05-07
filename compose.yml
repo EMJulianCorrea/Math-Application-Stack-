@@ -52,7 +52,7 @@ services:
       MathAppJwtKey: "${MathAppJwtKey}"
       Math_DB: "Server=math-db,1433;Database=MathDB;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;"
     ports:
-      - "8081:8080"
+      - "5000:8080"
 
   math-client:
     build:
@@ -65,7 +65,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ApiSettings__BaseUrl: "http://math-api:5266"
     ports:
-      - "5266:8080"
+      - "5001:8080"
     volumes:
       - client-dataprotection-keys:/keys
 

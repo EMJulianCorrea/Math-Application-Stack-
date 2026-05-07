@@ -1,7 +1,6 @@
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 
 USER root
-RUN mkdir /keys && chown app:app /keys
 RUN apt-get update && apt-get install -y libgssapi-krb5-2
 USER app
 
@@ -14,10 +13,13 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
 COPY . .
-RUN dotnet restore "./MathAPIClient.csproj"
-RUN dotnet publish "./MathAPIClient.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet restore "./MathAPI.csproj"
+RUN dotnet publish "./MathAPI.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .
-ENTRYPOINT ["dotnet", "MathAPIClient.dll"]
+
+EXPOSE 8080
+
+ENTRYPOINT ["dotnet", "MathAPI.dll"]
