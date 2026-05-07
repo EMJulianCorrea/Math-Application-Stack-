@@ -5,7 +5,10 @@ namespace MathAPI.Models;
 
 public partial class MathCalculation
 {
-    public MathCalculation() { }
+    public MathCalculation()
+    {
+        
+    }
 
     public int CalculationId { get; set; }
 

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "crRzkygROz8=",
+  "dgSpecHash": "XlNSxePlYRQ=",
   "success": true,
-  "projectFilePath": "C:\\Users\\lab_services_student\\Documents\\VSCode Projects\\MathAPI\\MathAPI.csproj",
+  "projectFilePath": "C:\\Users\\lab_services_student\\Documents\\GitHub\\Math-Application-Stack-\\MathAPI\\MathAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\lab_services_student\\.nuget\\packages\\azure.core\\1.47.1\\azure.core.1.47.1.nupkg.sha512",
     "C:\\Users\\lab_services_student\\.nuget\\packages\\azure.identity\\1.14.2\\azure.identity.1.14.2.nupkg.sha512",
@@ -72,9 +72,9 @@
       "code": "NU1903",
       "level": "Warning",
       "message": "Package 'Microsoft.NETCore.Jit' 1.0.2 has a known high severity vulnerability, https://github.com/advisories/GHSA-xcvr-qv8h-m7xw",
-      "projectPath": "C:\\Users\\lab_services_student\\Documents\\VSCode Projects\\MathAPI\\MathAPI.csproj",
+      "projectPath": "C:\\Users\\lab_services_student\\Documents\\GitHub\\Math-Application-Stack-\\MathAPI\\MathAPI.csproj",
       "warningLevel": 1,
-      "filePath": "C:\\Users\\lab_services_student\\Documents\\VSCode Projects\\MathAPI\\MathAPI.csproj",
+      "filePath": "C:\\Users\\lab_services_student\\Documents\\GitHub\\Math-Application-Stack-\\MathAPI\\MathAPI.csproj",
       "libraryId": "Microsoft.NETCore.Jit",
       "targetGraphs": [
         "net10.0"

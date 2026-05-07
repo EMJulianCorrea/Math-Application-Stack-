@@ -1,21 +1,34 @@
+using System.Net.Http.Headers;
+using System.Text;
+using MathAPIClient.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using MathAPIClient.Models;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
-using System.Text;
-using System.Net.Http.Headers;
 
 namespace MathAPIClient.Controllers
 {
     public class MathController : Controller
     {
-
-        private static HttpClient httpClient = new()
+        private static HttpClient? httpClient;
+        public MathController(IConfiguration configuration)
         {
-            BaseAddress = new Uri("http://localhost:5266/"),
-        };
+            if (httpClient == null)
+            {
+                var baseUrl = configuration["ApiSettings:BaseUrl"];
 
+                if (string.IsNullOrWhiteSpace(baseUrl))
+                {
+                    throw new InvalidOperationException("ApiSettings:BaseUrl is missing.");
+                }
+
+                httpClient = new HttpClient
+                {
+                    BaseAddress = new Uri(baseUrl)
+                };
+            }
+        }
+
+        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Calculate()
         {
             var token = HttpContext.Session.GetString("MathJWT");
@@ -25,115 +38,138 @@ namespace MathAPIClient.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
-            List<SelectListItem> operations = new List<SelectListItem> {
-                new SelectListItem { Value = "1", Text = "+" },
-                new SelectListItem { Value = "2", Text = "-" },
-                new SelectListItem { Value = "3", Text = "*" },
-                new SelectListItem { Value = "4", Text = "/" },
-
-            };
-            ViewBag.Operations = operations;
-
+            ViewBag.Operations = GetOperations();
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Calculate(decimal? FirstNumber, decimal? SecondNumber,int Operation)
+        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+        public async Task<IActionResult> Calculate(decimal? FirstNumber, decimal? SecondNumber, int Operation)
         {
-             var token = HttpContext.Session.GetString("MathJWT");
-
+            var token = HttpContext.Session.GetString("MathJWT");
             if (token == null)
             {
                 return RedirectToAction("Login", "Auth");
             }
 
             var currentUser = HttpContext.Session.GetString("currentUser");
-            decimal? Result = 0;
+            decimal? result = 0;
             MathCalculation mathCalculation;
 
             try
             {
-                mathCalculation = MathCalculation.Create(FirstNumber, SecondNumber, Operation, Result, currentUser);
+                mathCalculation = MathCalculation.Create(FirstNumber, SecondNumber, Operation, result, currentUser);
             }
             catch (Exception ex)
             {
                 ViewBag.Error = ex.Message;
+                ViewBag.Operations = GetOperations();
                 return View();
-                throw;
             }
-            
-            StringContent jsonContent = new(JsonConvert.SerializeObject(mathCalculation), Encoding.UTF8,"application/json"); 
-            
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            HttpResponseMessage response = await httpClient.PostAsync("api/Math/PostCalculate", jsonContent);
+
+            StringContent jsonContent = new(
+                JsonConvert.SerializeObject(mathCalculation),
+                Encoding.UTF8,
+                "application/json"
+            );
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "api/Math/PostCalculate");
+            request.Content = jsonContent;
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            HttpResponseMessage response = await httpClient!.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
             {
                 var jsonResponse = await response.Content.ReadAsStringAsync();
                 MathCalculation? deserialisedResponse = JsonConvert.DeserializeObject<MathCalculation>(jsonResponse);
-                ViewBag.Result = deserialisedResponse.Result;
-                List<SelectListItem> operations = new List<SelectListItem> {
-                new SelectListItem { Value = "1", Text = "+" },
-                new SelectListItem { Value = "2", Text = "-" },
-                new SelectListItem { Value = "3", Text = "*" },
-                new SelectListItem { Value = "4", Text = "/" },
-            };
-            ViewBag.Operations = operations;
 
-            return View();
-            } else
+                if (deserialisedResponse == null)
+                {
+                    ViewBag.Result = "Invalid response from server.";
+                    ViewBag.Operations = GetOperations();
+                    return View();
+                }
+
+                ViewBag.Result = deserialisedResponse.Result;
+                ViewBag.Operations = GetOperations();
+                return View();
+            }
+            else
             {
-                ViewBag.Result = "An error has occurred";
+                ViewBag.Result = await response.Content.ReadAsStringAsync();
+                ViewBag.Operations = GetOperations();
                 return View();
             }
         }
 
+        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         public async Task<IActionResult> History()
         {
             var token = HttpContext.Session.GetString("MathJWT");
-
             if (token == null)
             {
                 return RedirectToAction("Login", "Auth");
             }
-            
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            HttpResponseMessage response = await httpClient.GetAsync("/api/Math/GetHistory");;
+
+            var request = new HttpRequestMessage(HttpMethod.Get, "api/Math/GetHistory");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            HttpResponseMessage response = await httpClient!.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
             {
                 var jsonResponse = await response.Content.ReadAsStringAsync();
-                List<MathCalculation>? deserialisedResponse = JsonConvert.DeserializeObject<List<MathCalculation>>(jsonResponse);
-                if (deserialisedResponse.Count == 0)
+                List<MathCalculation>? deserialisedResponse =
+                    JsonConvert.DeserializeObject<List<MathCalculation>>(jsonResponse);
+
+                if (deserialisedResponse == null || deserialisedResponse.Count == 0)
                 {
                     ViewBag.HistoryMessage = "No history exists";
+                    return View(new List<MathCalculation>());
                 }
+
                 return View(deserialisedResponse);
-            }  else
+            }
+            else
             {
                 ViewBag.HistoryMessage = "No history to show";
-                return View();
-            }            
+                return View(new List<MathCalculation>());
+            }
         }
 
+        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         public async Task<IActionResult> Clear()
         {
             var token = HttpContext.Session.GetString("MathJWT");
-
             if (token == null)
             {
                 return RedirectToAction("Login", "Auth");
             }
 
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            HttpResponseMessage response = await httpClient.DeleteAsync("/api/Math/DeleteHistory");
+            var request = new HttpRequestMessage(HttpMethod.Delete, "api/Math/DeleteHistory");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            if (response.IsSuccessStatusCode)
+            HttpResponseMessage response = await httpClient!.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
             {
-                var jsonResponse = await response.Content.ReadAsStringAsync();
+                TempData["HistoryMessage"] = "Failed to clear history.";
             }
+
             return RedirectToAction("History");
+        }
+
+        private static List<SelectListItem> GetOperations()
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem { Value = "1", Text = "+" },
+                new SelectListItem { Value = "2", Text = "-" },
+                new SelectListItem { Value = "3", Text = "*" },
+                new SelectListItem { Value = "4", Text = "/" }
+            };
         }
     }
 }
