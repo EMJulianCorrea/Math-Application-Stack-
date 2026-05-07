@@ -65,7 +65,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ApiSettings__BaseUrl: "http://math-api:5266"
     ports:
-      - "5001:8080"
+      - "5266:8080"
     volumes:
       - client-dataprotection-keys:/keys
 
