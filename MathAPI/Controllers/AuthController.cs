@@ -35,7 +35,6 @@ namespace MathAPI.Controllers
                 var fbAuthLink = await auth.SignInWithEmailAndPasswordAsync(login.Email, login.Password);
                 string currentUserId = fbAuthLink.User.LocalId;
                 string currentUserEmail = fbAuthLink.User.Email;
-                var user = await _userManager.FindByEmailAsync(email);
 
                 if (currentUserId != null)
                 {
@@ -43,7 +42,7 @@ namespace MathAPI.Controllers
 
                     var claims = new List<Claim>
                     {
-                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                        new Claim(ClaimTypes.NameIdentifier, currentUserId),
                         new Claim(ClaimTypes.Email, currentUserEmail),
                         new Claim("UserId", currentUserId)
                     };
@@ -82,7 +81,6 @@ namespace MathAPI.Controllers
                 var fbAuthLink = await auth.SignInWithEmailAndPasswordAsync(login.Email, login.Password);
                 string currentUserId = fbAuthLink.User.LocalId;
                 string currentUserEmail = fbAuthLink.User.Email;
-                var user = await _userManager.FindByEmailAsync(email);
 
                 if (currentUserId != null)
                 {
@@ -90,7 +88,7 @@ namespace MathAPI.Controllers
 
                     var claims = new List<Claim>
                     {
-                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                        new Claim(ClaimTypes.NameIdentifier, currentUserId),
                         new Claim(ClaimTypes.Email, currentUserEmail),
                         new Claim("UserId", currentUserId)
                     };
