@@ -1,175 +1,131 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
 using MathAPI.Models;
-using System.Threading.Tasks;
-using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
-namespace MathAPI.Controllers;
-
-[Route("api/[controller]")]
-[ApiController]
-
-public class MathController : Controller
+namespace MathAPI.Controllers
 {
-    private readonly MathDbContext _context;
-
-    public MathController(MathDbContext context)
+    [Route("api/[controller]")]
+    [ApiController]
+    public class MathController : Controller
     {
-        _context = context;
-    }
+        private readonly MathDbContext _context;
 
-    [HttpPost("PostCalculate")]
-    #region 
-    [ProducesResponseType(typeof(MathCalculation), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(Error), StatusCodes.Status400BadRequest)]
-    [Produces("application/json")]
-    [Authorize]
-    #endregion
-    public async Task<IActionResult> PostCalculate([FromBody] MathCalculationRequest request)
-    {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        if (string.IsNullOrEmpty(userId))
-            return Unauthorized(new Error("Invalid token"));
-
-        MathCalculation mathCalculation;
-
-        try
+        public MathController(MathDbContext context)
         {
-            mathCalculation = MathCalculation.Create(
-                request.FirstNumber,
-                request.SecondNumber,
-                request.Operation,
-                null,
-                userId
-            );
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new Error(ex.Message));
+            _context = context;
         }
 
-        switch (mathCalculation.Operation)
+        [HttpPost("PostCalculate")]
+        #region
+        [ProducesResponseType(typeof(MathCalculation), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(Error), StatusCodes.Status400BadRequest)]
+        [Produces("application/json")]
+        [Authorize]
+        #endregion
+        public async Task<IActionResult> PostCalculate(MathCalculation mathCalculation)
         {
-            case 1:
-                mathCalculation.Result = mathCalculation.FirstNumber + mathCalculation.SecondNumber;
-                break;
-            case 2:
-                mathCalculation.Result = mathCalculation.FirstNumber - mathCalculation.SecondNumber;
-                break;
-            case 3:
-                mathCalculation.Result = mathCalculation.FirstNumber * mathCalculation.SecondNumber;
-                break;
-            case 4:
-                mathCalculation.Result = mathCalculation.SecondNumber == 0
-                    ? throw new DivideByZeroException()
-                    : mathCalculation.FirstNumber / mathCalculation.SecondNumber;
-                break;
-        }
+            var Token = User.FindFirst("UserId")?.Value;
 
-        _context.Add(mathCalculation);
-        await _context.SaveChangesAsync();
+            if (mathCalculation.FirstNumber == null || mathCalculation.SecondNumber == null || mathCalculation.Operation == 0) {
+                return BadRequest(new Error("Math equation not complete!"));
+            }
 
-        return CreatedAtAction(nameof(PostCalculate), mathCalculation);
-    }
+            switch (mathCalculation.Operation)
+            {
+                case 1:
+                    mathCalculation.Result = mathCalculation.FirstNumber + mathCalculation.SecondNumber;
+                    break;
+                case 2:
+                    mathCalculation.Result = mathCalculation.FirstNumber - mathCalculation.SecondNumber;
+                    break;
+                case 3:
+                    mathCalculation.Result = mathCalculation.FirstNumber * mathCalculation.SecondNumber;
+                    break;
+                default:
+                    mathCalculation.Result = mathCalculation.FirstNumber / mathCalculation.SecondNumber;
+                    break;
+            }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Calculate(decimal? FirstNumber, decimal? SecondNumber, int Operation)
-    {
-        var token = HttpContext.Session.GetString("currentUser");
+            try
+            {
+                mathCalculation = MathCalculation.Create(mathCalculation.FirstNumber, mathCalculation.SecondNumber, mathCalculation.Operation, mathCalculation.Result, Token);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
-        if (token == null)
-        {
-            return RedirectToAction("Login", "Auth");
-        }
-        decimal? Result = 0;
-        MathCalculation mathCalculation;
-
-        try
-        {
-            mathCalculation = MathCalculation.Create(FirstNumber, SecondNumber, Operation, Result, token);
-        }
-        catch (Exception ex)
-        {
-            ViewBag.Error = ex.Message;
-            return View();
-            throw;
+            if (ModelState.IsValid)
+            {
+                _context.Add(mathCalculation);
+                await _context.SaveChangesAsync();
+            }
+            
+            return Created(mathCalculation.CalculationId.ToString(), mathCalculation);
         }
 
 
-        switch (Operation)
+        [HttpGet("GetHistory")]
+        #region
+        [ProducesResponseType(typeof(List<MathCalculation>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Error), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(Error), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(Error), StatusCodes.Status404NotFound)]
+        [Produces("application/json")]
+        [Authorize]
+        #endregion
+        public async Task<IActionResult> GetHistory()
         {
-            case 1:
-                mathCalculation.Result = mathCalculation.FirstNumber + mathCalculation.SecondNumber;
-                break;
-            case 2:
-                mathCalculation.Result = mathCalculation.FirstNumber - mathCalculation.SecondNumber;
-                break;
-            case 3:
-                mathCalculation.Result = mathCalculation.FirstNumber * mathCalculation.SecondNumber;
-                break;
-            case 4:
-                mathCalculation.Result = mathCalculation.FirstNumber / mathCalculation.SecondNumber;
-                break;
-            default:
-                throw new ArgumentException("Operation not present");
-                break;
+            var Token = User.FindFirst("UserId")?.Value;
+
+            if (_context.MathCalculations.Count(m => m.FirebaseUuid.Equals(Token)) == 0)
+            {
+                return BadRequest(new Error("User invalid!"));
+            }
+
+            List<MathCalculation> historyItems = await _context.MathCalculations.Where(m => m.FirebaseUuid.Equals(Token)).ToListAsync();
+
+            if (historyItems.Count > 0)
+            {
+                return Ok(historyItems);
+            } else
+            {
+                return NotFound(new Error("No history found!"));
+            }
         }
 
-        if (mathCalculation.FirebaseUuid == null || mathCalculation.FirebaseUuid == "")
-            return Unauthorized(new Error("Token missing!"));
+        [HttpDelete("DeleteHistory")]
+        #region
+        [ProducesResponseType(typeof(List<MathCalculation>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Error), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(Error), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(Error), StatusCodes.Status404NotFound)]
+        [Produces("application/json")]
+        [Authorize]
+        #endregion
+        public async Task<IActionResult> DeleteHistory()
+        {            
+            var Token = User.FindFirst("UserId")?.Value;
 
-        if (mathCalculation.FirstNumber == null || mathCalculation.SecondNumber == null || mathCalculation.Operation == 0)
-            return BadRequest(new Error("Math equation not complete!"));
+            if (_context.MathCalculations.Count(m => m.FirebaseUuid.Equals(Token)) == 0)
+            {
+                return BadRequest(new Error("User invalid!"));
+            }
 
-        _context.Add(mathCalculation);
-        await _context.SaveChangesAsync();
+            List<MathCalculation> removableItems = await _context.MathCalculations.Where(m => m.FirebaseUuid.Equals(Token)).ToListAsync();
 
-        ViewBag.Result = mathCalculation.Result;
-        return View();
-
-        // return RedirectToAction("Calculate");
-
-    }
-
-    [HttpGet("GetHistory")]
-    [Authorize]
-    public async Task<IActionResult> GetHistory()
-    {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        if (string.IsNullOrEmpty(userId))
-            return Unauthorized(new Error("Invalid token"));
-
-        var history = await _context.MathCalculations
-            .Where(m => m.FirebaseUuid == userId)
-            .ToListAsync();
-
-        return Ok(history);
-    }
-
-    [HttpDelete("DeleteHistory")]
-    [Authorize]
-    public async Task<IActionResult> DeleteHistory()
-    {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        if (string.IsNullOrEmpty(userId))
-            return Unauthorized(new Error("Invalid token"));
-
-        var history = await _context.MathCalculations
-            .Where(m => m.FirebaseUuid == userId)
-            .ToListAsync();
-
-        if (history.Count == 0)
-            return Ok(new List<MathCalculation>()); // tests expect empty array
-
-        _context.MathCalculations.RemoveRange(history);
-        await _context.SaveChangesAsync();
-
-        return Ok(history);
+            if (removableItems.Count > 0)
+            {
+                _context.MathCalculations.RemoveRange(removableItems);
+                await _context.SaveChangesAsync();
+                return Ok(removableItems);
+            }
+            else
+            {
+                return NotFound(new Error("No history to delete!"));
+            }
+        }
+        
     }
 }

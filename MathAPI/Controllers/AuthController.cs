@@ -15,14 +15,20 @@ namespace MathAPI.Controllers
     [ApiController]
     public class AuthController : Controller
     {
+        private readonly IConfiguration configuration;
 
-        FirebaseAuthProvider auth;
-        byte[] key;
+        private readonly FirebaseAuthProvider auth;
+        private readonly byte[] key;
 
-        public AuthController()
+        public AuthController(IConfiguration configuration)
         {
-            auth = new FirebaseAuthProvider(new FirebaseConfig(Environment.GetEnvironmentVariable("FirebaseMathApp")));
-            key = Encoding.ASCII.GetBytes(Environment.GetEnvironmentVariable("MathAppJwtKey"));
+            configuration = configuration;
+
+            var firebaseApiKey = configuration["FirebaseMathApp"];
+            var jwtKey = configuration["MathAppJwtKey"];
+            
+            auth = new FirebaseAuthProvider(new FirebaseConfig(firebaseApiKey));
+            key = Encoding.ASCII.GetBytes(jwtKey);
         }
 
         [HttpPost("Register")]
@@ -39,7 +45,7 @@ namespace MathAPI.Controllers
                 if (currentUserId != null)
                 {
                     var tokenHandler = new JwtSecurityTokenHandler();
-
+                    
                     var claims = new List<Claim>
                     {
                         new Claim(ClaimTypes.NameIdentifier, currentUserId),
@@ -57,7 +63,7 @@ namespace MathAPI.Controllers
                     var token = tokenHandler.CreateToken(tokenDescriptor);
                     var tokenString = tokenHandler.WriteToken(token);
 
-                    return Ok(new AuthResponse(tokenString, currentUserId));
+                    return Ok(new AuthResponse(tokenString,currentUserId));
                 }
             }
             catch (FirebaseAuthException ex)
@@ -103,7 +109,7 @@ namespace MathAPI.Controllers
                     var token = tokenHandler.CreateToken(tokenDescriptor);
                     var tokenString = tokenHandler.WriteToken(token);
 
-                    return Ok(new AuthResponse(tokenString, currentUserId));
+                    return Ok(new AuthResponse(tokenString,currentUserId));
                 }
             }
             catch (FirebaseAuthException ex)
@@ -123,7 +129,7 @@ namespace MathAPI.Controllers
 
         [HttpPost("Logout")]
         public IActionResult LogOut()
-        {
+        {            
             return Ok();
         }
     }
