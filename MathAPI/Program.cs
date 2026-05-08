@@ -17,7 +17,14 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<MathDbContext>(options =>
                 options.UseSqlServer(Environment.GetEnvironmentVariable("Math_DB")));
 
-var key = Encoding.ASCII.GetBytes(Environment.GetEnvironmentVariable("MathAppJwtKey"));
+var jwtKey = builder.Configuration["Jwt:Key"];
+
+if (string.IsNullOrWhiteSpace(jwtKey))
+{
+    throw new Exception("JWT key missing in appsettings.json");
+}
+
+var key = Encoding.UTF8.GetBytes(jwtKey);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -63,6 +70,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseAuthorization();
+app.UseAuthentication();
 
 app.MapControllers();
 

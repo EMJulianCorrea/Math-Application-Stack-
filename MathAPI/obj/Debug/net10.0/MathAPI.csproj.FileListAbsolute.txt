@@ -163,18 +163,6 @@ C:\Users\lab_services_student\Documents\VSCode Projects\MathAPI\bin\Debug\net10.
 C:\Users\lab_services_student\Documents\VSCode Projects\MathAPI\bin\Debug\net10.0\Firebase.Auth.dll
 C:\Users\lab_services_student\Documents\VSCode Projects\MathAPI\bin\Debug\net10.0\System.ServiceModel.dll
 C:\Users\lab_services_student\Documents\VSCode Projects\MathAPI\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
-C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\MathAPI.csproj.AssemblyReference.cache
-C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\rpswa.dswa.cache.json
-C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\MathAPI.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\MathAPI.AssemblyInfoInputs.cache
-C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\MathAPI.AssemblyInfo.cs
-C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\MathAPI.csproj.CoreCompileInputs.cache
-C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\MathAPI.MvcApplicationPartsAssemblyInfo.cs
-C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\MathAPI.MvcApplicationPartsAssemblyInfo.cache
-C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\MathAPI.sourcelink.json
-C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\MathAPI.dll
-C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\refint\MathAPI.dll
-C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\MathAPI.pdb
 C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\bin\Debug\net10.0\appsettings.Development.json
 C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\bin\Debug\net10.0\appsettings.json
 C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\bin\Debug\net10.0\MathAPI.staticwebassets.endpoints.json
@@ -317,6 +305,15 @@ C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\b
 C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\bin\Debug\net10.0\runtimes\win-arm64\native\Microsoft.Data.SqlClient.SNI.dll
 C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\bin\Debug\net10.0\runtimes\win-x64\native\Microsoft.Data.SqlClient.SNI.dll
 C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\bin\Debug\net10.0\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
+C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\MathAPI.csproj.AssemblyReference.cache
+C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\rpswa.dswa.cache.json
+C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\MathAPI.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\MathAPI.AssemblyInfoInputs.cache
+C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\MathAPI.AssemblyInfo.cs
+C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\MathAPI.csproj.CoreCompileInputs.cache
+C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\MathAPI.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\MathAPI.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\MathAPI.sourcelink.json
 C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\rjimswa.dswa.cache.json
 C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\rjsmrazor.dswa.cache.json
 C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
@@ -327,5 +324,8 @@ C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\o
 C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\staticwebassets.build.endpoints.json
 C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\swae.build.ex.cache
 C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\MathAPI.csproj.Up2Date
+C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\MathAPI.dll
+C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\refint\MathAPI.dll
+C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\MathAPI.pdb
 C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\MathAPI.genruntimeconfig.cache
 C:\Users\lab_services_student\Documents\GitHub\Math-Application-Stack-\MathAPI\obj\Debug\net10.0\ref\MathAPI.dll
